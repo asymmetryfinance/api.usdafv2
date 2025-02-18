@@ -1,15 +1,15 @@
 {
   "total_bold_supply": "4000.383580671535205688",
-  "total_debt_pending": "0.368657874001793124",
-  "total_coll_value": "7647.885388821566971071",
+  "total_debt_pending": "0.3698223692166552",
+  "total_coll_value": "7663.422499743684052683",
   "total_sp_deposits": "2000",
-  "total_value_locked": "9647.885388821566971071",
-  "max_sp_apy": "Infinity",
+  "total_value_locked": "9663.422499743684052683",
+  "max_sp_apy": "0.0037503595890410963",
   "branch": {
     "scrvUSD": {
       "coll_active": "0",
       "coll_default": "0",
-      "coll_price": "1.03886511",
+      "coll_price": "1.03887056",
       "sp_deposits": "0",
       "interest_accrual_1y": "0",
       "interest_pending": "0",
@@ -17,13 +17,13 @@
       "debt_pending": "0",
       "coll_value": "0",
       "value_locked": "0",
-      "sp_apy": "NaN",
-      "apy_avg": "NaN"
+      "sp_apy": "0",
+      "apy_avg": "0"
     },
     "sDAI": {
       "coll_active": "0",
       "coll_default": "0",
-      "coll_price": "1.14680194",
+      "coll_price": "1.14673936",
       "sp_deposits": "0",
       "interest_accrual_1y": "0",
       "interest_pending": "0",
@@ -31,20 +31,20 @@
       "debt_pending": "0",
       "coll_value": "0",
       "value_locked": "0",
-      "sp_apy": "NaN",
-      "apy_avg": "NaN"
+      "sp_apy": "0",
+      "apy_avg": "0"
     },
     "sfrxETH": {
       "coll_active": "1.154226567322180177",
       "coll_default": "0",
-      "coll_price": "2930.52921329",
+      "coll_price": "2942.91567899",
       "sp_deposits": "2000",
       "interest_accrual_1y": "10.000958904109589041",
-      "interest_pending": "0.186551372312920915",
+      "interest_pending": "0.187133619920351953",
       "batch_management_fees_pending": "0",
-      "debt_pending": "0.186551372312920915",
-      "coll_value": "3382.494674293085896071",
-      "value_locked": "5382.494674293085896071",
+      "debt_pending": "0.187133619920351953",
+      "coll_value": "3396.791462079250821683",
+      "value_locked": "5396.791462079250821683",
       "sp_apy": "0.0037503595890410963",
       "apy_avg": "0.0037503595890410963"
     },
@@ -59,27 +59,27 @@
       "debt_pending": "0",
       "coll_value": "0",
       "value_locked": "0",
-      "sp_apy": "NaN",
-      "apy_avg": "NaN"
+      "sp_apy": "0",
+      "apy_avg": "0"
     },
     "wBTC": {
       "coll_active": "0.0455017",
       "coll_default": "0",
-      "coll_price": "93741.34844475",
+      "coll_price": "93768.60727543",
       "sp_deposits": "0",
       "interest_accrual_1y": "10.000958904109589041",
-      "interest_pending": "0.182106501688872209",
+      "interest_pending": "0.182688749296303247",
       "batch_management_fees_pending": "0",
-      "debt_pending": "0.182106501688872209",
-      "coll_value": "4265.390714528481075",
-      "value_locked": "4265.390714528481075",
-      "sp_apy": "Infinity",
-      "apy_avg": "Infinity"
+      "debt_pending": "0.182688749296303247",
+      "coll_value": "4266.631037664433231",
+      "value_locked": "4266.631037664433231",
+      "sp_apy": "0",
+      "apy_avg": "0"
     },
     "sUSDS": {
       "coll_active": "0",
       "coll_default": "0",
-      "coll_price": "1.03830435",
+      "coll_price": "1.03824854",
       "sp_deposits": "0",
       "interest_accrual_1y": "0",
       "interest_pending": "0",
@@ -87,8 +87,8 @@
       "debt_pending": "0",
       "coll_value": "0",
       "value_locked": "0",
-      "sp_apy": "NaN",
-      "apy_avg": "NaN"
+      "sp_apy": "0",
+      "apy_avg": "0"
     }
   }
 }

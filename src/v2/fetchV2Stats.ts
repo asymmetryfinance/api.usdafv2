@@ -143,18 +143,22 @@ export const fetchV2Stats = async ({
 
     // branches
     fetchBranchData(contracts.branches)
+      .catch(() => emptyBranchData(contracts.branches))
       .then(branches =>
         branches.map(branch => ({
           ...branch,
           debt_pending: branch.interest_pending.add(branch.batch_management_fees_pending),
           coll_value: branch.coll_active.add(branch.coll_default).mul(branch.coll_price),
-          sp_apy: (SP_YIELD_SPLIT * Number(branch.interest_accrual_1y)) / Number(branch.sp_deposits)
+          sp_apy:
+            Number(branch.sp_deposits) > 0
+              ? (SP_YIELD_SPLIT * Number(branch.interest_accrual_1y)) / Number(branch.sp_deposits)
+              : 0
         }))
       )
       .then(branches =>
         branches.map(branch => ({
           ...branch,
-          value_locked: branch.coll_value.add(branch.sp_deposits) // taking BOLD at face value
+          value_locked: branch.coll_value.add(branch.sp_deposits)
         }))
       ),
 
@@ -166,7 +170,7 @@ export const fetchV2Stats = async ({
     })
   ]);
 
-  const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x));
+  const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x) && isFinite(x));
 
   return {
     total_bold_supply: `${total_bold_supply}`,

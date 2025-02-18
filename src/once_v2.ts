@@ -10,8 +10,10 @@ const panic = <T>(message: string): T => {
   throw new Error(message);
 };
 
-const alchemyApiKey = process.env.ALCHEMY_API_KEY || undefined; // filter out empty string
-const duneApiKey: string = process.env.DUNE_API_KEY || panic("missing DUNE_API_KEY");
+// const alchemyApiKey = process.env.ALCHEMY_API_KEY || undefined; // filter out empty string
+// const duneApiKey: string = process.env.DUNE_API_KEY || panic("missing DUNE_API_KEY");
+const alchemyApiKey = "i3g1r9Bd75WOzQmApKRyxkKcrwxbx2k3";
+const duneApiKey = "lnxAivAFJ0JhkGSrhnRuYaMAsy9AudLb";
 
 const mainnetProvider = getProvider("mainnet", { alchemyApiKey });
 
