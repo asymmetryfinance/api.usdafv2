@@ -108,7 +108,7 @@ const fetchSpAverageApysFromDune = async ({
         branch.collSymbol,
         {
           apy_avg_1d: apys[0]?.apr || 0,
-          apy_avg_7d: apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length
+          apy_avg_7d: apys.length > 0 ? apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length : 0
         }
       ];
     })
