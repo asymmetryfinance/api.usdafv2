@@ -6,7 +6,7 @@ export interface LiquityV2Deployment {
   constants: LiquityV2Constants;
   boldToken: string;
   branches: LiquityV2BranchAddresses[];
-  governance: LiquityV2Governance;
+  governance?: LiquityV2Governance;
 }
 
 export interface LiquityV2Constants {
@@ -83,7 +83,7 @@ export interface Governance {
 export const getContracts = (provider: Provider, deployment: LiquityV2Deployment) => ({
   boldToken: new Contract(deployment.boldToken, erc20Abi, provider) as unknown as ERC20,
   governance: new Contract(
-    deployment.governance.governance,
+    deployment.governance?.governance || "",
     governanceAbi,
     provider
   ) as unknown as Governance,

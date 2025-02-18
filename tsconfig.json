@@ -5,12 +5,13 @@
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "outDir": "build"
+    "outDir": "build",
+    "types": ["node"]
   },
   "include": ["src"]
 }

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "once": "tsx src/once.ts",
+    "once": "tsx src/once_v2.ts",
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {

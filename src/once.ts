@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 
-import v2MainnetDeployment from "../bold/contracts/addresses/1.json";
-import v2SepoliaDeployment from "../bold/contracts/addresses/11155111.json";
+// import v2MainnetDeployment from "../bold/contracts/addresses/1.json";
+// import v2SepoliaDeployment from "../bold/contracts/addresses/11155111.json";
 import { getProvider } from "./connection";
 import { fetchLQTYCirculatingSupply } from "./fetchLQTYCirculatingSupply";
 import { fetchLUSDCBBAMMStats } from "./fetchLUSDCBBAMMStats";
@@ -52,31 +52,34 @@ const writeTree = (parentDir: string, tree: Tree) => {
 
 EthersLiquity.connect(mainnetProvider)
   .then(async liquity => {
-    const [lqtyCirculatingSupply, lusdTotalSupply, lusdCBBAMMStats, v2MainnetStats, v2SepoliaStats] = await Promise.all(
-      [
-        fetchLQTYCirculatingSupply(liquity),
-        fetchLUSDTotalSupply(liquity),
-        fetchLUSDCBBAMMStats(transposeApiKey),
-        fetchV2Stats({
-          network: "mainnet",
-          deployment: v2MainnetDeployment,
-          duneApiKey,
-          provider: mainnetProvider
-        }),
-        fetchV2Stats({
-          network: "sepolia",
-          deployment: v2SepoliaDeployment,
-          provider: sepoliaProvider,
-          duneApiKey
-        })
-      ]
-    );
+    const [
+      lqtyCirculatingSupply,
+      lusdTotalSupply,
+      lusdCBBAMMStats
+      //  v2MainnetStats, v2SepoliaStats
+    ] = await Promise.all([
+      fetchLQTYCirculatingSupply(liquity),
+      fetchLUSDTotalSupply(liquity),
+      fetchLUSDCBBAMMStats(transposeApiKey)
+      // fetchV2Stats({
+      //   network: "mainnet",
+      //   deployment: v2MainnetDeployment,
+      //   duneApiKey,
+      //   provider: mainnetProvider
+      // }),
+      // fetchV2Stats({
+      //   network: "sepolia",
+      //   deployment: v2SepoliaDeployment,
+      //   provider: sepoliaProvider,
+      //   duneApiKey
+      // })
+    ]);
 
     const v2Stats = {
-      ...v2MainnetStats,
-      testnet: {
-        sepolia: v2SepoliaStats
-      }
+      // ...v2MainnetStats,
+      // testnet: {
+      //   sepolia: v2SepoliaStats
+      // }
     };
 
     fs.mkdirSync(OUTPUT_DIR_V1, { recursive: true });
@@ -87,11 +90,13 @@ EthersLiquity.connect(mainnetProvider)
     writeTree(OUTPUT_DIR_V2, v2Stats);
     fs.writeFileSync(
       path.join(OUTPUT_DIR_V2, "mainnet.json"),
-      JSON.stringify(v2MainnetStats, null, 2)
+      // JSON.stringify(v2MainnetStats, null, 2)
+      JSON.stringify({}, null, 2)
     );
     fs.writeFileSync(
       path.join(OUTPUT_DIR_V2, "testnet", "sepolia.json"),
-      JSON.stringify(v2SepoliaStats, null, 2)
+      // JSON.stringify(v2SepoliaStats, null, 2)
+      JSON.stringify({}, null, 2)
     );
 
     console.log(`LQTY circulating supply: ${lqtyCirculatingSupply}`);

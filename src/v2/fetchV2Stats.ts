@@ -1,6 +1,6 @@
 import type { BlockTag, Provider } from "@ethersproject/abstract-provider";
 import type { BigNumber } from "@ethersproject/bignumber";
-import { AddressZero } from "@ethersproject/constants";
+// import { AddressZero } from "@ethersproject/constants";
 import { resolveProperties } from "@ethersproject/properties";
 import { Decimal } from "@liquity/lib-base";
 import { DUNE_SPV2_AVERAGE_APY_URL_MAINNET, DUNE_SPV2_AVERAGE_APY_URL_SEPOLIA } from "../constants";
@@ -57,21 +57,23 @@ const emptyBranchData = (branches: LiquityV2BranchContracts[]): ReturnType<typeo
     }))
   );
 
-const isDuneSpAverageApyResponse = (data: unknown): data is DuneResponse<{
+const isDuneSpAverageApyResponse = (
+  data: unknown
+): data is DuneResponse<{
   apr: number;
   collateral_type: string;
-}> => (
-  isDuneResponse(data)
-  && data.result.rows.length > 0
-  && data.result.rows.every((row: unknown) =>
-    typeof row === "object"
-    && row !== null
-    && "collateral_type" in row
-    && typeof row.collateral_type === "string"
-    && "apr" in row
-    && typeof row.apr === "number"
-  )
-);
+}> =>
+  isDuneResponse(data) &&
+  data.result.rows.length > 0 &&
+  data.result.rows.every(
+    (row: unknown) =>
+      typeof row === "object" &&
+      row !== null &&
+      "collateral_type" in row &&
+      typeof row.collateral_type === "string" &&
+      "apr" in row &&
+      typeof row.apr === "number"
+  );
 
 const fetchSpAverageApysFromDune = async ({
   branches,
@@ -82,33 +84,41 @@ const fetchSpAverageApysFromDune = async ({
   apiKey: string;
   network: "mainnet" | "sepolia";
 }) => {
-  const url = network === "sepolia"
-    ? DUNE_SPV2_AVERAGE_APY_URL_SEPOLIA
-    : DUNE_SPV2_AVERAGE_APY_URL_MAINNET;
+  const url =
+    network === "sepolia" ? DUNE_SPV2_AVERAGE_APY_URL_SEPOLIA : DUNE_SPV2_AVERAGE_APY_URL_MAINNET;
 
   // disabled when DUNE_SPV2_AVERAGE_APY_URL_* is null
   if (!url) {
     return null;
   }
 
-  const { result: { rows: sevenDaysApys } } = await duneFetch({
+  const {
+    result: { rows: sevenDaysApys }
+  } = await duneFetch({
     apiKey,
     url: `${url}?limit=${branches.length * 7}`,
     validate: isDuneSpAverageApyResponse
   });
 
-  return Object.fromEntries(branches.map(branch => {
-    const apys = sevenDaysApys.filter(row => (
-      row.collateral_type === branch.collSymbol
-    ));
-    return [branch.collSymbol, {
-      apy_avg_1d: apys[0].apr,
-      apy_avg_7d: apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length
-    }];
-  })) as Record<string, {
-    apy_avg_1d: number;
-    apy_avg_7d: number;
-  }>;
+  return Object.fromEntries(
+    branches.map(branch => {
+      const apys = sevenDaysApys.filter(row => row.collateral_type === branch.collSymbol);
+
+      return [
+        branch.collSymbol,
+        {
+          apy_avg_1d: apys[0]?.apr || 0,
+          apy_avg_7d: apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length
+        }
+      ];
+    })
+  ) as Record<
+    string,
+    {
+      apy_avg_1d: number;
+      apy_avg_7d: number;
+    }
+  >;
 };
 
 export const fetchV2Stats = async ({
@@ -127,18 +137,12 @@ export const fetchV2Stats = async ({
   const SP_YIELD_SPLIT = Number(Decimal.fromBigNumberString(deployment.constants.SP_YIELD_SPLIT));
   const contracts = getContracts(provider, deployment);
 
-  // Last step of deployment renounces Governance ownership
-  const deployed = await contracts.governance
-    .owner()
-    .then(owner => owner == AddressZero)
-    .catch(() => false);
-
   const [total_bold_supply, branches, spV2AverageApys] = await Promise.all([
     // total_bold_supply
-    deployed ? contracts.boldToken.totalSupply({ blockTag }).then(decimalify) : Decimal.ZERO,
+    contracts.boldToken.totalSupply({ blockTag }).then(decimalify),
 
     // branches
-    (deployed ? fetchBranchData : emptyBranchData)(contracts.branches)
+    fetchBranchData(contracts.branches)
       .then(branches =>
         branches.map(branch => ({
           ...branch,
@@ -155,13 +159,11 @@ export const fetchV2Stats = async ({
       ),
 
     // spV2AverageApys
-    deployed
-      ? fetchSpAverageApysFromDune({
-        branches: contracts.branches,
-        apiKey: duneApiKey,
-        network
-      })
-      : null
+    fetchSpAverageApysFromDune({
+      branches: contracts.branches,
+      apiKey: duneApiKey,
+      network
+    })
   ]);
 
   const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x));
@@ -182,13 +184,16 @@ export const fetchV2Stats = async ({
         } = spV2AverageApys?.[coll_symbol] ?? {};
         return [
           coll_symbol,
-          mapObj({
-            ...branch,
-            sp_apy,
-            apy_avg: sp_apy,
-            // ...(sp_apy_avg_1d !== undefined ? { sp_apy_avg_1d } : {}),
-            // ...(sp_apy_avg_7d !== undefined ? { sp_apy_avg_7d } : {})
-          }, x => `${x}`)
+          mapObj(
+            {
+              ...branch,
+              sp_apy,
+              apy_avg: sp_apy
+              // ...(sp_apy_avg_1d !== undefined ? { sp_apy_avg_1d } : {}),
+              // ...(sp_apy_avg_7d !== undefined ? { sp_apy_avg_7d } : {})
+            },
+            x => `${x}`
+          )
         ];
       })
     )
