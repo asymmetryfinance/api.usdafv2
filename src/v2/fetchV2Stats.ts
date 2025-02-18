@@ -103,6 +103,7 @@ const fetchSpAverageApysFromDune = async ({
   return Object.fromEntries(
     branches.map(branch => {
       const apys = sevenDaysApys.filter(row => row.collateral_type === branch.collSymbol);
+
       return [
         branch.collSymbol,
         {
