@@ -4,7 +4,7 @@ import path from "path";
 import { getProvider } from "./connection";
 import { fetchV2Stats } from "./v2/fetchV2Stats";
 import v2MainnetDeployment from "./v2Mainnet.json";
-import { OUTPUT_DIR_V2 } from "./constants";
+import { DUNE_SPV2_AVERAGE_APY_URL_MAINNET, OUTPUT_DIR_V2 } from "./constants";
 
 const panic = <T>(message: string): T => {
   throw new Error(message);
@@ -18,10 +18,10 @@ const mainnetProvider = getProvider("mainnet", { alchemyApiKey });
 async function generateV2Stats() {
   try {
     const v2MainnetStats = await fetchV2Stats({
-      network: "mainnet",
       deployment: v2MainnetDeployment,
       duneApiKey,
-      provider: mainnetProvider
+      provider: mainnetProvider,
+      duneUrl: DUNE_SPV2_AVERAGE_APY_URL_MAINNET
     });
 
     // Ensure output directory exists

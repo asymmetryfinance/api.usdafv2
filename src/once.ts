@@ -110,8 +110,7 @@ EthersLiquity.connect(mainnetProvider)
     );
     fs.writeFileSync(
       path.join(OUTPUT_DIR_V2, "testnet", "sepolia.json"),
-      // JSON.stringify(v2SepoliaStats, null, 2)
-      JSON.stringify({}, null, 2)
+      JSON.stringify(v2SepoliaStats, null, 2)
     );
 
     console.log(`LQTY circulating supply: ${lqtyCirculatingSupply}`);
