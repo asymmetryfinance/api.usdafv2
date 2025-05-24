@@ -1,9 +1,8 @@
 import type { BlockTag, Provider } from "@ethersproject/abstract-provider";
 import type { BigNumber } from "@ethersproject/bignumber";
-// import { AddressZero } from "@ethersproject/constants";
+import { AddressZero } from "@ethersproject/constants";
 import { resolveProperties } from "@ethersproject/properties";
 import { Decimal } from "@liquity/lib-base";
-import { DUNE_SPV2_AVERAGE_APY_URL_MAINNET, DUNE_SPV2_AVERAGE_APY_URL_SEPOLIA } from "../constants";
 
 import { duneFetch, type DuneResponse, isDuneResponse } from "../dune";
 import { getContracts, LiquityV2BranchContracts, type LiquityV2Deployment } from "./contracts";
@@ -78,15 +77,12 @@ const isDuneSpAverageApyResponse = (
 const fetchSpAverageApysFromDune = async ({
   branches,
   apiKey,
-  network
+  url
 }: {
   branches: LiquityV2BranchContracts[];
   apiKey: string;
-  network: "mainnet" | "sepolia";
+  url: string | null;
 }) => {
-  const url =
-    network === "sepolia" ? DUNE_SPV2_AVERAGE_APY_URL_SEPOLIA : DUNE_SPV2_AVERAGE_APY_URL_MAINNET;
-
   // disabled when DUNE_SPV2_AVERAGE_APY_URL_* is null
   if (!url) {
     return null;
@@ -103,12 +99,11 @@ const fetchSpAverageApysFromDune = async ({
   return Object.fromEntries(
     branches.map(branch => {
       const apys = sevenDaysApys.filter(row => row.collateral_type === branch.collSymbol);
-
       return [
         branch.collSymbol,
         {
-          apy_avg_1d: apys[0]?.apr || 0,
-          apy_avg_7d: apys.length > 0 ? apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length : 0
+          apy_avg_1d: apys[0].apr,
+          apy_avg_7d: apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length
         }
       ];
     })
@@ -122,14 +117,14 @@ const fetchSpAverageApysFromDune = async ({
 };
 
 export const fetchV2Stats = async ({
-  network,
   provider,
+  duneUrl,
   duneApiKey,
   deployment,
   blockTag = "latest"
 }: {
-  network: "mainnet" | "sepolia";
   provider: Provider;
+  duneUrl: string | null;
   duneApiKey: string;
   deployment: LiquityV2Deployment;
   blockTag?: BlockTag;
@@ -137,40 +132,50 @@ export const fetchV2Stats = async ({
   const SP_YIELD_SPLIT = Number(Decimal.fromBigNumberString(deployment.constants.SP_YIELD_SPLIT));
   const contracts = getContracts(provider, deployment);
 
+  // Last step of deployment renounces Governance ownership
+  const deployed = await contracts.governance
+    .owner()
+    .then(owner => owner == AddressZero)
+    .catch(() => false);
+
   const [total_bold_supply, branches, spV2AverageApys] = await Promise.all([
     // total_bold_supply
-    contracts.boldToken.totalSupply({ blockTag }).then(decimalify),
+    deployed ? contracts.boldToken.totalSupply({ blockTag }).then(decimalify) : Decimal.ZERO,
 
     // branches
-    fetchBranchData(contracts.branches)
-      .catch(() => emptyBranchData(contracts.branches))
-      .then(branches =>
-        branches.map(branch => ({
+    (deployed ? fetchBranchData : emptyBranchData)(contracts.branches)
+      .then(branches => {
+        return branches.map(branch => {
+          const sp_deposits = Number(branch.sp_deposits);
+          return {
+            ...branch,
+            debt_pending: branch.interest_pending.add(branch.batch_management_fees_pending),
+            coll_value: branch.coll_active.add(branch.coll_default).mul(branch.coll_price),
+            sp_apy:
+              sp_deposits === 0
+                ? 0
+                : (SP_YIELD_SPLIT * Number(branch.interest_accrual_1y)) / sp_deposits
+          };
+        });
+      })
+      .then(branches => {
+        return branches.map(branch => ({
           ...branch,
-          debt_pending: branch.interest_pending.add(branch.batch_management_fees_pending),
-          coll_value: branch.coll_active.add(branch.coll_default).mul(branch.coll_price),
-          sp_apy:
-            Number(branch.sp_deposits) > 0
-              ? (SP_YIELD_SPLIT * Number(branch.interest_accrual_1y)) / Number(branch.sp_deposits)
-              : 0
-        }))
-      )
-      .then(branches =>
-        branches.map(branch => ({
-          ...branch,
-          value_locked: branch.coll_value.add(branch.sp_deposits)
-        }))
-      ),
+          value_locked: branch.coll_value.add(branch.sp_deposits) // taking BOLD at face value
+        }));
+      }),
 
     // spV2AverageApys
-    fetchSpAverageApysFromDune({
-      branches: contracts.branches,
-      apiKey: duneApiKey,
-      network
-    })
+    deployed
+      ? fetchSpAverageApysFromDune({
+          branches: contracts.branches,
+          apiKey: duneApiKey,
+          url: duneUrl
+        })
+      : null
   ]);
 
-  const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x) && isFinite(x));
+  const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x));
 
   return {
     total_bold_supply: `${total_bold_supply}`,
@@ -182,19 +187,17 @@ export const fetchV2Stats = async ({
 
     branch: Object.fromEntries(
       branches.map(({ coll_symbol, sp_apy, ...branch }) => {
-        const {
-          // apy_avg_1d: sp_apy_avg_1d,
-          // apy_avg_7d: sp_apy_avg_7d
-        } = spV2AverageApys?.[coll_symbol] ?? {};
+        const { apy_avg_1d: sp_apy_avg_1d, apy_avg_7d: sp_apy_avg_7d } =
+          spV2AverageApys?.[coll_symbol] ?? {};
         return [
           coll_symbol,
           mapObj(
             {
               ...branch,
               sp_apy,
-              apy_avg: sp_apy
-              // ...(sp_apy_avg_1d !== undefined ? { sp_apy_avg_1d } : {}),
-              // ...(sp_apy_avg_7d !== undefined ? { sp_apy_avg_7d } : {})
+              apy_avg: sp_apy,
+              ...(sp_apy_avg_1d !== undefined ? { sp_apy_avg_1d } : {}),
+              ...(sp_apy_avg_7d !== undefined ? { sp_apy_avg_7d } : {})
             },
             x => `${x}`
           )
