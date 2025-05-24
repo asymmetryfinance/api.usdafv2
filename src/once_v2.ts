@@ -1,10 +1,14 @@
 import util from "util";
 import fs from "fs";
 import path from "path";
+import dotenv from "dotenv";
 import { getProvider } from "./connection";
 import { fetchV2Stats } from "./v2/fetchV2Stats";
 import v2MainnetDeployment from "./v2Mainnet.json";
 import { DUNE_SPV2_AVERAGE_APY_URL_MAINNET, OUTPUT_DIR_V2 } from "./constants";
+
+// Load environment variables from .env file
+dotenv.config();
 
 const panic = <T>(message: string): T => {
   throw new Error(message);
