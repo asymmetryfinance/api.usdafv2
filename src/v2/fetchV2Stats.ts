@@ -95,15 +95,14 @@ const fetchSpAverageApysFromDune = async ({
     url: `${url}?limit=${branches.length * 7}`,
     validate: isDuneSpAverageApyResponse
   });
-
   return Object.fromEntries(
     branches.map(branch => {
       const apys = sevenDaysApys.filter(row => row.collateral_type === branch.collSymbol);
       return [
         branch.collSymbol,
         {
-          apy_avg_1d: apys[0].apr,
-          apy_avg_7d: apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length
+          apy_avg_1d: apys[0]?.apr ?? 0,
+          apy_avg_7d: apys.length > 0 ? apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length : 0
         }
       ];
     })
@@ -131,17 +130,16 @@ export const fetchV2Stats = async ({
 }) => {
   const SP_YIELD_SPLIT = Number(Decimal.fromBigNumberString(deployment.constants.SP_YIELD_SPLIT));
   const contracts = getContracts(provider, deployment);
-
   // Last step of deployment renounces Governance ownership
-  const deployed = await contracts.governance
-    .owner()
-    .then(owner => owner == AddressZero)
-    .catch(() => false);
+  // const deployed = await contracts.governance
+  //   .owner()
+  //   .then(owner => owner == AddressZero)
+  //   .catch(() => false);
+  const deployed = true;
 
   const [total_bold_supply, branches, spV2AverageApys] = await Promise.all([
     // total_bold_supply
     deployed ? contracts.boldToken.totalSupply({ blockTag }).then(decimalify) : Decimal.ZERO,
-
     // branches
     (deployed ? fetchBranchData : emptyBranchData)(contracts.branches)
       .then(branches => {
@@ -174,7 +172,6 @@ export const fetchV2Stats = async ({
         })
       : null
   ]);
-
   const sp_apys = branches.map(b => b.sp_apy).filter(x => !isNaN(x));
 
   return {
