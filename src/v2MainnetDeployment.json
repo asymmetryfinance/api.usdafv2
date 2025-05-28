@@ -53,7 +53,7 @@
       "stabilityPool": "0x76365e44314c048a924314c3bd9bf59d6fa9e243"
     },
     {
-      "collSymbol": "WBTC18",
+      "collSymbol": "wBTC",
       "collToken": "0xf53bb90bd20c2a3eb3eb01e8233130a69db58324",
       "activePool": "0xc9e524c90598d679b6d1fd46cd1decfd20e353f3",
       "defaultPool": "0xfd256da1aa42695351c08b2ff4a91ebba1a07f7f",
@@ -61,7 +61,7 @@
       "stabilityPool": "0xe9a258f362fc7f8003a39b087046f64815cc9c56"
     },
     {
-      "collSymbol": "cbBTC18",
+      "collSymbol": "cbBTC",
       "collToken": "0x7fd713fe57fcd0a7636c152faba6bdc2d3b27d15",
       "activePool": "0xada317bdabb3c78f581ec2e056d5557663669fd0",
       "defaultPool": "0xe8e0924fcacc3642aa7d28b7a0c3e8799498fc62",
