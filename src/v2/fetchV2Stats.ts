@@ -74,6 +74,15 @@ const isDuneSpAverageApyResponse = (
       typeof row.apr === "number"
   );
 
+// Helper function to map collateral symbols for Dune APY queries
+const mapCollateralSymbolForDune = (symbol: string): string => {
+  // Map wBTC to WBTC for Dune queries
+  if (symbol === "wBTC") {
+    return "WBTC";
+  }
+  return symbol;
+};
+
 const fetchSpAverageApysFromDune = async ({
   branches,
   apiKey,
@@ -97,7 +106,8 @@ const fetchSpAverageApysFromDune = async ({
   });
   return Object.fromEntries(
     branches.map(branch => {
-      const apys = sevenDaysApys.filter(row => row.collateral_type === branch.collSymbol);
+      const duneSymbol = mapCollateralSymbolForDune(branch.collSymbol);
+      const apys = sevenDaysApys.filter(row => row.collateral_type === duneSymbol);
       return [
         branch.collSymbol,
         {
