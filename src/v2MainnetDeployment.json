@@ -1,72 +1,62 @@
 {
   "constants": {
-    "SP_YIELD_SPLIT": "750000000000000000"
+    "ETH_GAS_COMPENSATION": "37500000000000000",
+    "INTEREST_RATE_ADJ_COOLDOWN": "604800",
+    "MAX_ANNUAL_INTEREST_RATE": "2500000000000000000",
+    "MIN_ANNUAL_INTEREST_RATE": "5000000000000000",
+    "MIN_DEBT": "2000000000000000000000",
+    "SP_YIELD_SPLIT": "750000000000000000",
+    "UPFRONT_INTEREST_PERIOD": "604800"
   },
-  "boldToken": "0x85e30b8b263bc64d94b827ed450f2edfee8579da",
+  "boldToken": "0x9cf12ccd6020b6888e4d4c4e4c7aca33c1eb91f8",
   "branches": [
+    {
+      "collSymbol": "ysyBOLD",
+      "collToken": "0x23346b04a7f55b8760e5860aa5a77383d63491cd",
+      "activePool": "0xb87e1e1c4cc2decada13025a8dc8a94bdb77fb63",
+      "defaultPool": "0x27f539ec3fa3e548e10d4ac883534eba891bb212",
+      "priceFeed": "0x7f575323ddedfbad449fef5459fad031fe49520b",
+      "stabilityPool": "0x83e5bde77d7477ecd972e338541b90af57675536"
+    },
     {
       "collSymbol": "scrvUSD",
       "collToken": "0x0655977feb2f289a4ab78af67bab0d17aab84367",
-      "activePool": "0xd7954a8c7fa74c97ad2545719ce82eae915d73f7",
-      "defaultPool": "0xcbb43a0a3fe57cab5fe4cb29bf654c4a17cfe3fd",
-      "priceFeed": "0x629b6c0dcdf865584fd58a08727abb9db7390e28",
-      "stabilityPool": "0x0b656b3af27e3a9cf143d16ed46466e0be27fecc"
-    },
-    {
-      "collSymbol": "sDAI",
-      "collToken": "0x83f20f44975d03b1b09e64809b757c47f942beea",
-      "activePool": "0x46b7180721eb35983d97e6f819bcedbe77ebcc03",
-      "defaultPool": "0x3bca1380bcab9889f440406a3c2f493be31c3ae2",
-      "priceFeed": "0xc470a1574b469a562fb237e289fdb217f8c14dc9",
-      "stabilityPool": "0xd95692af0a30d936287bc7dc3837d3fbf7415f8a"
+      "activePool": "0x244c422663328233a5d1bd5045ff943ba97d046e",
+      "defaultPool": "0xc20a51f66c917feff80d1e089199f727060c0369",
+      "priceFeed": "0xf125c72ae447efdf3fa3601eda9ac0ebec06cbb8",
+      "stabilityPool": "0xd48dc7cddc481f596bd9a97755c7ac696ad4ea87"
     },
     {
       "collSymbol": "sUSDS",
       "collToken": "0xa3931d71877c0e7a3148cb7eb4463524fec27fbd",
-      "activePool": "0x8450fb582063c1a1a7c68fe5ca4fc3dbf2ad969e",
-      "defaultPool": "0x3e40bb108350a449c19dd11a842637566215c43b",
-      "priceFeed": "0x806b2921e394b3f84a549ab89cf73e57f0c882c5",
-      "stabilityPool": "0x6f35f38d93165b67edc6abcd4b8ac5fef5ea86e0"
+      "activePool": "0x08eaafd8fbb12cf12d6765e80c5b0ff8490c232d",
+      "defaultPool": "0xfab7396e2a6a3364e02ed26d2f80a354aa923b88",
+      "priceFeed": "0x2113468843cf2d0fd976690f4ec6e4213df46911",
+      "stabilityPool": "0xb571781cedf07257d60d6b252a3d8b24150ded97"
     },
     {
       "collSymbol": "sfrxUSD",
       "collToken": "0xcf62f905562626cfcdd2261162a51fd02fc9c5b6",
-      "activePool": "0xd344626aadb84a23781b14b2f1ff01e40910a44a",
-      "defaultPool": "0xd369aabdd62c7627bf7c041144862c780f56cbf2",
-      "priceFeed": "0xcda8cca990aff26fd8298e0d30304e4d01f7b387",
-      "stabilityPool": "0x001fdd4f3405f97ed61c7dc817208dfeb8f6cb70"
-    },
-    {
-      "collSymbol": "sUSDe",
-      "collToken": "0x9d39a5de30e57443bff2a8307a4256c8797a3497",
-      "activePool": "0xdee8a9ac2c2819fe6a3bae45a12bff70c604805a",
-      "defaultPool": "0x4c4d2ff3d49a3a0785cced6c79deaff27ffb5d49",
-      "priceFeed": "0x0daafddcf74451caec724bcd2f0d7e4025c95b94",
-      "stabilityPool": "0x38b5c7a506fff3d3dafd2d013e969d6e99cd9b73"
+      "activePool": "0x20f29569566020d8e49c9843033c370772a93774",
+      "defaultPool": "0xfe6f765e77fd8f17ec3a985ac36c3c3ea92c946d",
+      "priceFeed": "0x653df748bf7a692555dcdbf4c504a8c84807f7c7",
+      "stabilityPool": "0x446f358e3a927cc68f342141d78aa2d1c54e18f0"
     },
     {
       "collSymbol": "tBTC",
       "collToken": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
-      "activePool": "0x03ed0485b586db818ab02e95eeeb5921b418a124",
-      "defaultPool": "0x576eba782d9b5f8bab2dc729bb430849b9b5e1fe",
-      "priceFeed": "0xce1ca28e54fd3bd431f893ddfffa1bd619c0517e",
-      "stabilityPool": "0x76365e44314c048a924314c3bd9bf59d6fa9e243"
+      "activePool": "0xb00d1d5dfd72a440b8c04a5f7b5bc3c8159a7f44",
+      "defaultPool": "0x254a6a3e172a81d5825122403e1bc4d47f264a07",
+      "priceFeed": "0xeaf3b36748d89d64ef1b6b3e1d7637c3e4745094",
+      "stabilityPool": "0x545a7ddfd863bd7ea0bfc689125169598085f75e"
     },
     {
       "collSymbol": "wBTC",
-      "collToken": "0xf53bb90bd20c2a3eb3eb01e8233130a69db58324",
-      "activePool": "0xc9e524c90598d679b6d1fd46cd1decfd20e353f3",
-      "defaultPool": "0xfd256da1aa42695351c08b2ff4a91ebba1a07f7f",
-      "priceFeed": "0x4d349971c23d6142e8de9debbfdbb045b7aaba49",
-      "stabilityPool": "0xe9a258f362fc7f8003a39b087046f64815cc9c56"
-    },
-    {
-      "collSymbol": "cbBTC",
-      "collToken": "0x7fd713fe57fcd0a7636c152faba6bdc2d3b27d15",
-      "activePool": "0xada317bdabb3c78f581ec2e056d5557663669fd0",
-      "defaultPool": "0xe8e0924fcacc3642aa7d28b7a0c3e8799498fc62",
-      "priceFeed": "0xaf99e6cf5832222c0e22ef6bf0868c4ed7f2953f",
-      "stabilityPool": "0x7f5d15f4053f1e34025907f0741f2abc4353c65c"
+      "collToken": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "activePool": "0xf507e264d507ef64a72aeaf4cc8c270d008fc48a",
+      "defaultPool": "0x01e37634cbd25ec7ffe680ece5eec178ff51ef2d",
+      "priceFeed": "0x4b74d043336678d2f62dae6595bc42dccabc3bb1",
+      "stabilityPool": "0x922faa141e95e43a9deeab8dade3ac8d4a32ad5c"
     }
   ]
 }
