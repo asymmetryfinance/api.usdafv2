@@ -92,37 +92,72 @@ const fetchSpAverageApysFromDune = async ({
   apiKey: string;
   url: string | null;
 }) => {
-  // disabled when DUNE_SPV2_AVERAGE_APY_URL_* is null
-  if (!url) {
-    return null;
-  }
-
-  const {
-    result: { rows: sevenDaysApys }
-  } = await duneFetch({
-    apiKey,
-    url: `${url}?limit=${branches.length * 7}`,
-    validate: isDuneSpAverageApyResponse
-  });
-  return Object.fromEntries(
-    branches.map(branch => {
-      const duneSymbol = mapCollateralSymbolForDune(branch.collSymbol);
-      const apys = sevenDaysApys.filter(row => row.collateral_type === duneSymbol);
-      return [
+  // disabled when DUNE_SPV2_AVERAGE_APY_URL_* is null or API key is empty
+  if (!url || !apiKey) {
+    return Object.fromEntries(
+      branches.map(branch => [
         branch.collSymbol,
         {
-          apy_avg_1d: apys[0]?.apr ?? 0,
-          apy_avg_7d: apys.length > 0 ? apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length : 0
+          apy_avg_1d: NaN,
+          apy_avg_7d: NaN
         }
-      ];
-    })
-  ) as Record<
-    string,
-    {
-      apy_avg_1d: number;
-      apy_avg_7d: number;
-    }
-  >;
+      ])
+    ) as Record<
+      string,
+      {
+        apy_avg_1d: number;
+        apy_avg_7d: number;
+      }
+    >;
+  }
+
+  try {
+    const {
+      result: { rows: sevenDaysApys }
+    } = await duneFetch({
+      apiKey,
+      url: `${url}?limit=${branches.length * 7}`,
+      validate: isDuneSpAverageApyResponse
+    });
+    return Object.fromEntries(
+      branches.map(branch => {
+        const duneSymbol = mapCollateralSymbolForDune(branch.collSymbol);
+        const apys = sevenDaysApys.filter(row => row.collateral_type === duneSymbol);
+        return [
+          branch.collSymbol,
+          {
+            apy_avg_1d: apys[0]?.apr ?? 0,
+            apy_avg_7d:
+              apys.length > 0 ? apys.reduce((acc, { apr }) => acc + apr, 0) / apys.length : 0
+          }
+        ];
+      })
+    ) as Record<
+      string,
+      {
+        apy_avg_1d: number;
+        apy_avg_7d: number;
+      }
+    >;
+  } catch (error) {
+    console.warn("Dune query failed, using default NaN values:", error);
+    // Return default NaN values for all branches when Dune query fails
+    return Object.fromEntries(
+      branches.map(branch => [
+        branch.collSymbol,
+        {
+          apy_avg_1d: NaN,
+          apy_avg_7d: NaN
+        }
+      ])
+    ) as Record<
+      string,
+      {
+        apy_avg_1d: number;
+        apy_avg_7d: number;
+      }
+    >;
+  }
 };
 
 export const fetchV2Stats = async ({
@@ -194,8 +229,9 @@ export const fetchV2Stats = async ({
 
     branch: Object.fromEntries(
       branches.map(({ coll_symbol, sp_apy, ...branch }) => {
-        const { apy_avg_1d: sp_apy_avg_1d, apy_avg_7d: sp_apy_avg_7d } =
-          spV2AverageApys?.[coll_symbol] ?? {};
+        const { apy_avg_1d: sp_apy_avg_1d, apy_avg_7d: sp_apy_avg_7d } = spV2AverageApys?.[
+          coll_symbol
+        ] ?? { apy_avg_1d: NaN, apy_avg_7d: NaN };
         return [
           coll_symbol,
           mapObj(

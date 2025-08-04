@@ -15,7 +15,7 @@ const panic = <T>(message: string): T => {
 };
 
 const alchemyApiKey = process.env.ALCHEMY_API_KEY || undefined; // filter out empty string
-const duneApiKey: string = process.env.DUNE_API_KEY || panic("missing DUNE_API_KEY");
+const duneApiKey: string = process.env.DUNE_API_KEY || ""; // Dune is deprecated, empty key will be handled gracefully
 
 const mainnetProvider = getProvider("mainnet", { alchemyApiKey });
 
